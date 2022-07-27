@@ -27,4 +27,34 @@ if ($text == '/start' || $text == 'start'){
         'chat_id' => $chat_id,
         'text' => "Я бот-переводчик и помогу перевести с английского на русский и обратно. Просто отрправьте мне слово или фразу"
     ]);
+}elseif (!empty($text)){
+
+    if (preg_match('#[a-z]+#i', $text)){
+        $source = 'en';
+        $target = 'ru';
+    }else{
+        $source = 'ru';
+        $target = 'en';
+    }
+
+    $attempts = 5;
+
+    $tr = new GoogleTranslateForFree();
+    $result = $tr->translate($source, $target, $text, $attempts);
+
+    if ($result){
+
+        $content = [
+            'chat_id' => $chat_id,
+            'text' => $result
+        ];
+        $telegram->sendMessage($content);
+
+    }else{
+        $content = [
+            'chat_id' => $chat_id,
+            'text' => 'Упс... Я не смог перевести'
+        ];
+        $telegram->sendMessage($content);
+    }
 }
